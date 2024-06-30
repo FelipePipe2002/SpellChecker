@@ -4,13 +4,17 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
+import java.util.Set;
 
 import edu.isistan.spellchecker.corrector.Corrector;
 import edu.isistan.spellchecker.corrector.Dictionary;
+import edu.isistan.spellchecker.tokenizer.TokenScanner;
 
 /**
  * El SpellChecker usa un Dictionary, un Corrector, and I/O para chequear
@@ -20,7 +24,7 @@ import edu.isistan.spellchecker.corrector.Dictionary;
  * <p>
  * Nota:
  * <ul>
- * <li> La implementación provista provee métodos utiles para implementar el SpellChecker.
+ * <li> La implementaciï¿½n provista provee mï¿½todos utiles para implementar el SpellChecker.
  * <li> Toda la salida al usuario deben enviarse a System.out (salida estandar)
  * </ul>
  * <p>
@@ -43,8 +47,8 @@ public class SpellChecker {
 	}
 
 	/**
-	 * Returna un entero desde el Scanner provisto. El entero estará en el rango [min, max].
-	 * Si no se ingresa un entero o este está fuera de rango, repreguntará.
+	 * Returna un entero desde el Scanner provisto. El entero estarï¿½ en el rango [min, max].
+	 * Si no se ingresa un entero o este estï¿½ fuera de rango, repreguntarï¿½.
 	 *
 	 * @param min
 	 * @param max
@@ -73,7 +77,30 @@ public class SpellChecker {
 		return sc.next();
 	}
 
-
+	/**
+	 * TODO: Hace java doc
+	 */
+	private Optional<String> manageCorrectionOptions(Scanner sc, String originalWord, Set<String> corrections){
+		System.out.println("The word: \"" + originalWord + "\" is not in the dictionary. Please enter the \nnumber corresponding with the appropriate action:");
+		System.out.println("0: Ignore and continue");
+		System.out.println("1: Replace with another word");
+		List<String> newWords = new ArrayList<>(corrections);
+		for (int i=0; i<newWords.size(); i++) {
+			System.out.println((i+2)+": Replace with \"" + newWords.get(i) + "\"");
+		}
+		System.out.println("Enter an option: ");
+		int option = this.getNextInt(0, newWords.size()+1,sc);
+		Optional<String> word;
+		if (option == 0) {
+			word = Optional.empty();
+		} else if (option == 1) {
+			System.out.println("Enter the new word: ");
+			word = Optional.of(this.getNextString(sc));
+		} else {
+			word = Optional.of(newWords.get(option-2));
+		}
+		return word;
+	}
 
 	/**
 	 * checkDocument interactivamente chequea un archivo de texto..  
@@ -85,11 +112,32 @@ public class SpellChecker {
 	 * @param in stream donde se encuentra el documento de entrada.
 	 * @param input entrada interactiva del usuario. Por ejemplo, entrada estandar System.in
 	 * @param out stream donde se escribe el documento de salida.
-	 * @throws IOException si se produce algún error leyendo el documento.
+	 * @throws IOException si se produce algï¿½n error leyendo el documento.
 	 */
 	public void checkDocument(Reader in, InputStream input, Writer out) throws IOException {
-		Scanner sc = new Scanner(input);
+		Scanner sc = new Scanner(input); //input del usuario
+		TokenScanner ts = new TokenScanner(in);
 
-		// STUB
+		while(ts.hasNext()){
+			String word = ts.next(); //obtengo la palabra
+
+			if(TokenScanner.isWord(word) && !dict.isWord(word)){ // palabra valida mal escrita
+				//toda la logica
+				Set<String> posibleCorrections = corr.getCorrections(word);
+
+				//mostrar opciones
+				Optional<String> correction = manageCorrectionOptions(sc, word, posibleCorrections);
+				
+				if(correction.isPresent()){
+					out.append(correction.get());
+				} else {
+					out.append(word);
+				}
+
+			} else {
+				out.append(word); // no entra si es un ?, $, #,etc gracias al ts.isWord(word)
+			}
+
+		}
 	}
 }
