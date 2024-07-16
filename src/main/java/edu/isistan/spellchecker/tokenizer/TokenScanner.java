@@ -1,69 +1,132 @@
 package edu.isistan.spellchecker.tokenizer;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.io.IOException;
+import java.io.Reader;
 
 /**
- * Dado un archivo provee un método para recorrerlo.
+ * Dado un archivo provee un mï¿½todo para recorrerlo.
  */
 public class TokenScanner implements Iterator<String> {
+
+  private Reader in;
+  /*EXAMPLES:
+   * â€œThey aren't brown, are they?â€
+   * "They", " ", "aren't", " ", "brown", ", ", "are", " ", "they" , "?".
+   * 
+   * It's time
+   * 2 e-mail!
+   * "It's", " ", "time", "\n2 ", "e", "-", "mail", "!"
+   */
+
 
   /**
    * Crea un TokenScanner.
    * <p>
    * Como un iterador, el TokenScanner solo debe leer lo justo y
-   * necesario para implementar los métodos next() y hasNext(). 
+   * necesario para implementar los mï¿½todos next() y hasNext(). 
    * No se debe leer toda la entrada de una.
    * <p>
    *
    * @param in fuente de entrada
-   * @throws IOException si hay algún error leyendo.
+   * @throws IOException si hay algï¿½n error leyendo.
    * @throws IllegalArgumentException si el Reader provisto es null
    */
-  public TokenScanner(java.io.Reader in) throws IOException {
-  
+  public TokenScanner(java.io.Reader in) throws IOException, IllegalArgumentException {
+    if (in == null) {
+      throw new IllegalArgumentException("The Reader can't be null");
+    }
+    this.in = in;
   }
 
   /**
-   * Determina si un carácer es una caracter válido para una palabra.
+   * Determina si un carï¿½cer es una caracter vï¿½lido para una palabra.
    * <p>
-   * Un caracter válido es una letra (
+   * Un caracter vï¿½lido es una letra (
    * Character.isLetter) o una apostrofe '\''.
    *
    * @param c 
    * @return true si es un caracter
    */
   public static boolean isWordCharacter(int c) {
-    return false;
+    return Character.isLetter(c) || c == '\'';
   }
 
 
    /**
-   * Determina si un string es una palabra válida.
-   * Null no es una palabra válida.
-   * Un string que todos sus caracteres son válidos es una 
-   * palabra. Por lo tanto, el string vacío es una palabra válida.
+   * Determina si un string es una palabra vï¿½lida.
+   * Null no es una palabra vï¿½lida.
+   * Un string que todos sus caracteres son vï¿½lidos es una 
+   * palabra. Por lo tanto, el string vacï¿½o es una palabra vï¿½lida.
    * @param s 
    * @return true si el string es una palabra.
    */
   public static boolean isWord(String s) {
-		return false;
+		if(s == null){
+      return false;
+    }else {
+      for(int i=0; i < s.length();i++){
+        if(!isWordCharacter(s.charAt(i))){
+          return false;
+        }
+      }
+    }
+    return true;
   }
+
+  private Character letter = null; //-2 no leyo nada aun, -1 termino, resto es una letra
 
   /**
    * Determina si hay otro token en el reader.
    */
   public boolean hasNext() {
-    return false;
+    try {
+      if(letter == null){
+        int intLetter = in.read();
+        if(intLetter == -1){
+          return false;
+        }
+        letter = new Character((char)intLetter);
+      }
+      return true;
+    } catch (IOException e) {
+      return false;
+    }
   }
 
   /**
    * Retorna el siguiente token.
    *
-   * @throws NoSuchElementException cuando se alcanzó el final de stream
+   * @throws NoSuchElementException cuando se alcanzï¿½ el final de stream
    */
-  public String next() {
-    return null;
+  public String next() throws NoSuchElementException{
+    StringBuffer palabra = new StringBuffer("");
+    try{
+      if(letter == null){
+        if(!hasNext()){
+          throw new NoSuchElementException("There aren't more words");
+        }
+      }
+      palabra.append(letter);
+
+      int intLetter = in.read();
+      letter = null;
+      while (isWordCharacter(intLetter) && intLetter != -1){
+        letter = new Character((char) intLetter);
+        palabra.append(letter);
+        intLetter = in.read();
+        
+      } //lee hasta terminar de encontrar la palabra
+      
+      if(intLetter != -1){
+        letter = new Character((char) intLetter); //si no es un caracter valido como ya fue leido lo guardamos para no perderlo
+      }
+
+      return palabra.toString();
+    } catch(IOException e){
+      return null;
+    }
   }
 
 }
