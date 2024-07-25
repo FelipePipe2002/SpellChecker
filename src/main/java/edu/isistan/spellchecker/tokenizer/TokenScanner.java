@@ -18,6 +18,11 @@ public class TokenScanner implements Iterator<String> {
    * It's time
    * 2 e-mail!
    * "It's", " ", "time", "\n2 ", "e", "-", "mail", "!"
+   * 
+   * Aren't you 
+   * tired
+   * "Aren't", " ", "you", " \n", "tired"
+   * 
    */
 
 
@@ -63,7 +68,7 @@ public class TokenScanner implements Iterator<String> {
    * @return true si el string es una palabra.
    */
   public static boolean isWord(String s) {
-		if(s == null){
+		if(s == null || s.equals("")){
       return false;
     }else {
       for(int i=0; i < s.length();i++){
@@ -108,21 +113,23 @@ public class TokenScanner implements Iterator<String> {
           throw new NoSuchElementException("There aren't more words");
         }
       }
+      //" "
       palabra.append(letter);
 
+      //"y"
       int intLetter = in.read();
-      letter = null;
-      while (isWordCharacter(intLetter) && intLetter != -1){
+      letter = (char) intLetter;
+      while (((isWordCharacter(intLetter) && isWordCharacter(palabra.charAt(0))) || (intLetter == '\n')) && intLetter != -1){
         letter = new Character((char) intLetter);
         palabra.append(letter);
         intLetter = in.read();
-        
       } //lee hasta terminar de encontrar la palabra
       
       if(intLetter != -1){
         letter = new Character((char) intLetter); //si no es un caracter valido como ya fue leido lo guardamos para no perderlo
       }
-
+      System.out.println("|" + palabra + "|");
+      //" you"
       return palabra.toString();
     } catch(IOException e){
       return null;
