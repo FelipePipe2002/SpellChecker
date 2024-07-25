@@ -24,7 +24,7 @@ import edu.isistan.spellchecker.tokenizer.TokenScanner;
  * <p>
  * Nota:
  * <ul>
- * <li> La implementaci�n provista provee m�todos utiles para implementar el SpellChecker.
+ * <li> La implementacion provista provee metodos utiles para implementar el SpellChecker.
  * <li> Toda la salida al usuario deben enviarse a System.out (salida estandar)
  * </ul>
  * <p>
@@ -47,8 +47,8 @@ public class SpellChecker {
 	}
 
 	/**
-	 * Returna un entero desde el Scanner provisto. El entero estar� en el rango [min, max].
-	 * Si no se ingresa un entero o este est� fuera de rango, repreguntar�.
+	 * Returna un entero desde el Scanner provisto. El entero estara en el rango [min, max].
+	 * Si no se ingresa un entero o este esta fuera de rango, repreguntara.
 	 *
 	 * @param min
 	 * @param max
@@ -120,10 +120,9 @@ public class SpellChecker {
 
 		while(ts.hasNext()){
 			String word = ts.next(); //obtengo la palabra
-
-			if(TokenScanner.isWord(word) && !dict.isWord(word)){ // palabra valida mal escrita
+			if(TokenScanner.isWord(word) && !dict.isWord(word.toLowerCase())){ // palabra valida mal escrita
 				//toda la logica
-				Set<String> posibleCorrections = corr.getCorrections(word);
+				Set<String> posibleCorrections = corr.getCorrections(word.toLowerCase());
 
 				//mostrar opciones
 				Optional<String> correction = manageCorrectionOptions(sc, word, posibleCorrections);

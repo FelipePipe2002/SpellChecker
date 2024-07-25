@@ -52,6 +52,9 @@ public class SpellCheckerRunner {
 	}
 
 	public static void main(String[] args) {
+		args = new String[] { "src\\main\\resources\\texts\\Gettysburg.txt",
+				"src\\main\\resources\\outputs\\output.txt",
+				"src\\main\\resources\\dictionaries\\dictionary.txt", "src\\main\\resources\\misspellings\\misspellings.txt" };
 		if (args.length != 4) {
 			System.out.println("uso: java SpellCheckRunner <in> <out> <dictionary> <corrector>");
 			System.out.println("<corrector> es SWAP, LEV, or el path para instanciar el FileCorrector.");

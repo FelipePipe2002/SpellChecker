@@ -1,6 +1,8 @@
 package edu.isistan.spellchecker.corrector.impl;
 
+import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeSet;
 
 import edu.isistan.spellchecker.corrector.Corrector;
 
@@ -11,6 +13,8 @@ import java.io.*;
  * 
  */
 public class FileCorrector extends Corrector {
+
+	private HashMap<String, String> misspells;
 
 	/** Clase especial que se utiliza al tener 
 	 * algun error de formato en el archivo de entrada.
@@ -78,7 +82,20 @@ public class FileCorrector extends Corrector {
 	 * @throws IllegalArgumentException reader es null
 	 */
 	public FileCorrector(Reader r) throws IOException, FormatException {
-
+		if (r == null) {
+			throw new IllegalArgumentException("null reader");
+		}
+		misspells = new HashMap<String, String>();
+		BufferedReader br = new BufferedReader(r);
+		String line;
+		while ((line = br.readLine()) != null) {
+			String[] parts = line.split(",");
+			if (parts.length != 2) {
+				throw new FormatException("bad line: " + line);
+			}
+			misspells.put(parts[0].trim().toLowerCase(), parts[1].trim());
+		}
+		br.close();
 	}
 
 	/** Construye el Filereader.
@@ -110,6 +127,15 @@ public class FileCorrector extends Corrector {
 	 * @throws IllegalArgumentException si la entrada no es una palabra valida
 	 */
 	public Set<String> getCorrections(String wrong) {
-		return null;
+		if (wrong == null) {
+			throw new IllegalArgumentException("null input");
+		}
+		String correct = misspells.get(wrong);
+		Set<String> corrections = new TreeSet<String>();
+		if (correct != null) {
+			corrections.add(correct);
+		}
+
+		return corrections;
 	}
 }

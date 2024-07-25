@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * Dado un archivo provee un m�todo para recorrerlo.
+ * Dado un archivo provee un metodo para recorrerlo.
  */
 public class TokenScanner implements Iterator<String> {
 
@@ -30,7 +30,7 @@ public class TokenScanner implements Iterator<String> {
    * Crea un TokenScanner.
    * <p>
    * Como un iterador, el TokenScanner solo debe leer lo justo y
-   * necesario para implementar los m�todos next() y hasNext(). 
+   * necesario para implementar los metodos next() y hasNext(). 
    * No se debe leer toda la entrada de una.
    * <p>
    *
@@ -46,9 +46,9 @@ public class TokenScanner implements Iterator<String> {
   }
 
   /**
-   * Determina si un car�cer es una caracter v�lido para una palabra.
+   * Determina si un caracer es una caracter valido para una palabra.
    * <p>
-   * Un caracter v�lido es una letra (
+   * Un caracter valido es una letra (
    * Character.isLetter) o una apostrofe '\''.
    *
    * @param c 
@@ -60,10 +60,10 @@ public class TokenScanner implements Iterator<String> {
 
 
    /**
-   * Determina si un string es una palabra v�lida.
-   * Null no es una palabra v�lida.
-   * Un string que todos sus caracteres son v�lidos es una 
-   * palabra. Por lo tanto, el string vac�o es una palabra v�lida.
+   * Determina si un string es una palabra valida.
+   * Null no es una palabra valida.
+   * Un string que todos sus caracteres son validos es una 
+   * palabra. Por lo tanto, el string vacio es una palabra valida.
    * @param s 
    * @return true si el string es una palabra.
    */
@@ -80,7 +80,7 @@ public class TokenScanner implements Iterator<String> {
     return true;
   }
 
-  private Character letter = null; //-2 no leyo nada aun, -1 termino, resto es una letra
+  private Integer letter = null; //-2 no leyo nada aun, -1 termino, resto es una letra
 
   /**
    * Determina si hay otro token en el reader.
@@ -88,11 +88,10 @@ public class TokenScanner implements Iterator<String> {
   public boolean hasNext() {
     try {
       if(letter == null){
-        int intLetter = in.read();
-        if(intLetter == -1){
-          return false;
-        }
-        letter = new Character((char)intLetter);
+        letter = in.read();
+      }
+      if(letter == -1){
+        return false;
       }
       return true;
     } catch (IOException e) {
@@ -114,21 +113,16 @@ public class TokenScanner implements Iterator<String> {
         }
       }
       //" "
-      palabra.append(letter);
+      palabra.append(Character.toString((char)letter.intValue()));
 
       //"y"
-      int intLetter = in.read();
-      letter = (char) intLetter;
-      while (((isWordCharacter(intLetter) && isWordCharacter(palabra.charAt(0))) || (intLetter == '\n')) && intLetter != -1){
-        letter = new Character((char) intLetter);
-        palabra.append(letter);
-        intLetter = in.read();
+      int lastLetter = letter;
+      letter = in.read();
+      while (((isWordCharacter(letter) && isWordCharacter(palabra.charAt(0)) && (lastLetter != '\n'))|| (letter == '\n')) && letter != -1){
+        palabra.append(Character.toString((char)letter.intValue()));
+        lastLetter = letter;
+        letter = in.read();
       } //lee hasta terminar de encontrar la palabra
-      
-      if(intLetter != -1){
-        letter = new Character((char) intLetter); //si no es un caracter valido como ya fue leido lo guardamos para no perderlo
-      }
-      System.out.println("|" + palabra + "|");
       //" you"
       return palabra.toString();
     } catch(IOException e){

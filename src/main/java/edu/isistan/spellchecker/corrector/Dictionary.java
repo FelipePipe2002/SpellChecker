@@ -9,7 +9,7 @@ import edu.isistan.spellchecker.tokenizer.TokenScanner;
  * El diccionario maneja todas las palabras conocidas.
  * El diccionario es case insensitive 
  * 
- * Una palabra "v�lida" es una secuencia de letras (determinado por Character.isLetter) 
+ * Una palabra "valida" es una secuencia de letras (determinado por Character.isLetter) 
  * o apostrofes.
  */
 public class Dictionary {
@@ -18,8 +18,8 @@ public class Dictionary {
 	/**
 	 * Construye un diccionario usando un TokenScanner
 	 * <p>
-	 * Una palabra v�lida es una secuencia de letras (ver Character.isLetter) o apostrofes.
-	 * Toda palabra no v�lida se debe ignorar
+	 * Una palabra valida es una secuencia de letras (ver Character.isLetter) o apostrofes.
+	 * Toda palabra no valida se debe ignorar
 	 *
 	 * <p>
 	 *
@@ -28,9 +28,12 @@ public class Dictionary {
 	 * @throws IllegalArgumentException el TokenScanner es null
 	 */
 	public Dictionary(TokenScanner ts) throws IOException {
+		if (ts == null) {
+			throw new IllegalArgumentException("null TokenScanner");
+		}
 		palabrasValidas = new HashSet<>();
 		while(ts.hasNext()){
-			String word = ts.next().toLowerCase();
+			String word = ts.next().toLowerCase().replace("\n", "");
 			if (TokenScanner.isWord(word)){
 				palabrasValidas.add(word);
 			}
@@ -53,27 +56,27 @@ public class Dictionary {
 	}
 
 	/**
-	 * Retorna el n�mero de palabras correctas en el diccionario.
-	 * Recuerde que como es case insensitive si Dogs y doGs est�n en el 
+	 * Retorna el numero de palabras correctas en el diccionario.
+	 * Recuerde que como es case insensitive si Dogs y doGs estan en el 
 	 * diccionario, cuentan como una sola palabra.
 	 * 
-	 * @return n�mero de palabras �nicas
+	 * @return numero de palabras unicas
 	 */
 	public int getNumWords() {
 		return palabrasValidas.size();
 	}
 
 	/**
-	 * Testea si una palabra es parte del diccionario. Si la palabra no est� en
+	 * Testea si una palabra es parte del diccionario. Si la palabra no esta en
 	 * el diccionario debe retornar false. null debe retornar falso.
-	 * Si en el diccionario est� la palabra Dog y se pregunta por la palabra dog
+	 * Si en el diccionario esta la palabra Dog y se pregunta por la palabra dog
 	 * debe retornar true, ya que es case insensitive.
 	 *
-	 *Llamar a este m�todo no debe reabrir el archivo de palabras.
+	 *Llamar a este metodo no debe reabrir el archivo de palabras.
 	 *
-	 * @param word verifica si la palabra est� en el diccionario. 
+	 * @param word verifica si la palabra esta en el diccionario. 
 	 * Asuma que todos los espacios en blanco antes y despues de la palabra fueron removidos.
-	 * @return si la palabra est� en el diccionario.
+	 * @return si la palabra esta en el diccionario.
 	 */
 	public boolean isWord(String word) {
 		if (word == null) return false;

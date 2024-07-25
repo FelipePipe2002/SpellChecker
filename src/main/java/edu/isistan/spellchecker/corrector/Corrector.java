@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * Esqueleto de las clases Corrector.
  * <p>
- * El m�todo matchCase es compartido por todas las classes Correctors.
+ * El metodo matchCase es compartido por todas las classes Correctors.
  * <p>
  * Implementaciones concretas deben implementar el metodo getCorrections
  * que en general invocaran al metodo matchCase.
