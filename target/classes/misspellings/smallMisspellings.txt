@@ -1,5 +1,0 @@
-lyon,lion
-chimpanze,chimpanzee
-gose,goose
-Tigger,tiger
-tigger,TRIGGER
