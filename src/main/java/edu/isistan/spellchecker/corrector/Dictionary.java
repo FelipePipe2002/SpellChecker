@@ -29,7 +29,12 @@ public class Dictionary {
 	 */
 	public Dictionary(TokenScanner ts) throws IOException {
 		palabrasValidas = new HashSet<>();
-		//ITERAR POR TODAS LAS PALABRAS Y AGREGARLAS
+		for(String word: ts) {
+			word = word.toLowerCase();
+			if (TokenScanner.isWord(word)){
+				palabrasValidas.add(word);
+			}
+		}
 	}
 
 	/**
@@ -71,6 +76,7 @@ public class Dictionary {
 	 * @return si la palabra est� en el diccionario.
 	 */
 	public boolean isWord(String word) {
-		return false;
+		if (word == null) return false;
+		return palabrasValidas.contains(word.toLowerCase());
 	}
 }
