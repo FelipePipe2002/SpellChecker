@@ -29,8 +29,8 @@ public class Dictionary {
 	 */
 	public Dictionary(TokenScanner ts) throws IOException {
 		palabrasValidas = new HashSet<>();
-		for(String word: ts) {
-			word = word.toLowerCase();
+		while(ts.hasNext()){
+			String word = ts.next().toLowerCase();
 			if (TokenScanner.isWord(word)){
 				palabrasValidas.add(word);
 			}
