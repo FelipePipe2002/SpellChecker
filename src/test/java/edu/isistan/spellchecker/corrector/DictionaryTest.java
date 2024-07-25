@@ -23,7 +23,7 @@ public class DictionaryTest {
 
   
   @Test(timeout=500) public void testDictionaryContainsApostrophe() throws IOException {
-    Dictionary d = new Dictionary(new TokenScanner(new FileReader("smallDictionary.txt")));
+    Dictionary d = new Dictionary(new TokenScanner(new FileReader("src\\main\\resources\\dictionaries\\smallDictionary.txt")));
     assertTrue("'it's' -> should be true ('it's' in file)", d.isWord("it's"));
   }
 
