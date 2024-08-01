@@ -1,9 +1,11 @@
 package edu.isistan.spellchecker.corrector.impl;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import edu.isistan.spellchecker.corrector.Corrector;
 import edu.isistan.spellchecker.corrector.Dictionary;
+import edu.isistan.spellchecker.tokenizer.TokenScanner;
 /**
  * Este corrector sugiere correciones cuando dos letras adyacentes han sido cambiadas.
  * <p>
@@ -17,6 +19,8 @@ import edu.isistan.spellchecker.corrector.Dictionary;
  */
 public class SwapCorrector extends Corrector {
 
+	private Dictionary dict;
+
 	/**
 	 * Construcye el SwapCorrector usando un Dictionary.
 	 *
@@ -24,7 +28,10 @@ public class SwapCorrector extends Corrector {
 	 * @throws IllegalArgumentException si el diccionario provisto es null
 	 */
 	public SwapCorrector(Dictionary dict) {
-
+		if (dict == null) {
+			throw new IllegalArgumentException("null Dictionary");
+		}
+		this.dict = dict;
 	}
 
 	/**
@@ -46,6 +53,18 @@ public class SwapCorrector extends Corrector {
 	 * @throws IllegalArgumentException si la entrada no es una palabra valida
 	 */
 	public Set<String> getCorrections(String wrong) {
-		return null;
+		if (!TokenScanner.isWord(wrong)) {
+			throw new IllegalArgumentException("not a valid word");
+		}
+		Set<String> corrections = new LinkedHashSet<>();
+
+		for(int i = 0; i < wrong.length() - 1; i++) {
+			String swapped = wrong.substring(0, i) + wrong.charAt(i + 1) + wrong.charAt(i) + wrong.substring(i + 2);
+			if (dict.isWord(swapped)) {
+				corrections.add(swapped);
+			}
+		}
+		
+		return corrections;
 	}
 }

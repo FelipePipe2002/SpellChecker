@@ -1,10 +1,13 @@
 package edu.isistan.spellchecker.corrector.impl;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Set;
 import java.util.TreeSet;
 
 import edu.isistan.spellchecker.corrector.Corrector;
+import edu.isistan.spellchecker.tokenizer.TokenScanner;
 
 import java.io.*;
 
@@ -14,7 +17,7 @@ import java.io.*;
  */
 public class FileCorrector extends Corrector {
 
-	private HashMap<String, String> misspells;
+	private HashMap<String, LinkedList<String>> misspells;
 
 	/** Clase especial que se utiliza al tener 
 	 * algun error de formato en el archivo de entrada.
@@ -85,7 +88,7 @@ public class FileCorrector extends Corrector {
 		if (r == null) {
 			throw new IllegalArgumentException("null reader");
 		}
-		misspells = new HashMap<String, String>();
+		misspells = new HashMap<String, LinkedList<String>>();
 		BufferedReader br = new BufferedReader(r);
 		String line;
 		while ((line = br.readLine()) != null) {
@@ -93,7 +96,14 @@ public class FileCorrector extends Corrector {
 			if (parts.length != 2) {
 				throw new FormatException("bad line: " + line);
 			}
-			misspells.put(parts[0].trim().toLowerCase(), parts[1].trim());
+			String wrong = parts[0].trim();
+			String correct = parts[1].trim();
+			LinkedList<String> corrects = misspells.get(wrong);
+			if (corrects == null) {
+				corrects = new LinkedList<String>();
+				misspells.put(wrong, corrects);
+			}
+			corrects.add(correct);
 		}
 		br.close();
 	}
@@ -105,7 +115,7 @@ public class FileCorrector extends Corrector {
 	 * @throws FileCorrector.FormatException 
 	 * @throws FileNotFoundException 
 	 */
-	public static FileCorrector make(String filename) throws IOException, FormatException {
+	public static FileCorrector make(String filename) throws IOException, FormatException, FileNotFoundException {
 		Reader r = new FileReader(filename);
 		FileCorrector fc;
 		try {
@@ -127,13 +137,13 @@ public class FileCorrector extends Corrector {
 	 * @throws IllegalArgumentException si la entrada no es una palabra valida
 	 */
 	public Set<String> getCorrections(String wrong) {
-		if (wrong == null) {
-			throw new IllegalArgumentException("null input");
+		if(!TokenScanner.isWord(wrong)){
+			throw new IllegalArgumentException("not a valid word");
 		}
-		String correct = misspells.get(wrong);
-		Set<String> corrections = new TreeSet<String>();
-		if (correct != null) {
-			corrections.add(correct);
+		LinkedList<String> corrects = misspells.get(wrong);
+		Set<String> corrections = new LinkedHashSet<String>();
+		if (corrects != null) {
+			corrections.addAll(corrects);
 		}
 
 		return corrections;
